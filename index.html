@@ -198,15 +198,16 @@
       <div class="section-ornament">
         <span></span><span class="ornament-gem">◆</span><span></span>
       </div>
-      <p class="eyebrow">Dispatches from the Abyss</p>
-      <h2 class="section-title">Join the<br>Dark Covenant</h2>
+      <h2 class="section-title">Join the Newsletter</h2>
+      <p class="eyebrow">Stay in the Darkness</p>
       <p class="newsletter__body">
-        New releases, cover reveals, and updates from the writing trenches — 
+        New releases, cover reveals, and chapter previews — 
         delivered straight to your inbox. No spam. Only darkness.
       </p>
-      <form class="nl__form reveal" id="nlForm">
+      <form class="nl__form reveal" id="nlForm" action="https://formspree.io/f/xbljenqo" method="POST">
         <input type="text"  name="name"  placeholder="Your Name"     class="nl__input" autocomplete="name" />
         <input type="email" name="email" placeholder="Email Address"  class="nl__input" required autocomplete="email" />
+        <input type="hidden" name="_subject" value="New Newsletter Signup — Bradley Bart Author Site" />
         <button type="submit" class="btn btn--blood btn--wide">
           <span class="btn__icon-l">✦</span> Enter the Covenant
         </button>
@@ -337,7 +338,27 @@
   document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
 
   // ── Newsletter ───────────────────────────────────────────
-  document.getElementById('nlForm').addEventListener('submit', e => {
+  document.getElementById('nlForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    const form = e.target;
+    const data = new FormData(form);
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST', body: data,
+        headers: { 'Accept': 'application/json' }
+      });
+      if (res.ok) {
+        form.style.display = 'none';
+        document.getElementById('nlSuccess').style.display = 'block';
+      } else {
+        alert('Something went wrong. Please try again.');
+      }
+    } catch(err) {
+      alert('Something went wrong. Please try again.');
+    }
+  });
+  // old handler removed — dummy:
+  document.getElementById('nlForm_DISABLED') && document.getElementById('nlForm_DISABLED').addEventListener('submit', e => {
     e.preventDefault();
     document.getElementById('nlForm').style.display = 'none';
     document.getElementById('nlSuccess').style.display = 'block';

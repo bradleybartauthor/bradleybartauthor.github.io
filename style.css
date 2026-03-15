@@ -1,7 +1,7 @@
 /* =====================================================
    Bradley Bart — Dark Fantasy Author Site v2
    Full dark-fantasy visual treatment
-   Deep charcoal / blood red / old gold / rust orange
+   Deep charcoal / old gold / parchment cream / rust
    ===================================================== */
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -27,9 +27,9 @@ ul { list-style: none; }
   --bg2:       #111111;
   --bg3:       #161616;
   --bg4:       #1c1410;   /* warm dark brown */
-  --red:       #a07808;
-  --red-hi:    #c9a227;
-  --red-glow:  rgba(160,120,8,0.35);
+  --accent:       #a07808;
+  --accent-hi:    #c9a227;
+  --accent-glow:  rgba(160,120,8,0.35);
   --gold:      #a07808;
   --gold-lt:   #c9a227;
   --gold-pale: #e8cc80;
@@ -141,15 +141,15 @@ ul { list-style: none; }
 
 .btn__icon-l { font-size: 0.85rem; }
 
-.btn--blood {
+.btn--forge {
   background: linear-gradient(135deg, #7a5c00, #a07808);
   border-color: #c9a227;
   color: #f0ddc8;
   box-shadow: 0 0 20px rgba(160,120,8,0.3), inset 0 1px 0 rgba(255,255,255,0.06);
 }
-.btn--blood:hover {
+.btn--forge:hover {
   box-shadow: 0 0 40px rgba(160,120,8,0.5), inset 0 1px 0 rgba(255,255,255,0.06);
-  border-color: #d0304a;
+  border-color: #c9a227;
 }
 
 .btn--iron {
@@ -679,14 +679,113 @@ ul { list-style: none; }
 }
 .footer__copy { font-size: 0.68rem; color: #3a3028; }
 
-/* ── REVEAL ──────────────────────────────────────────── */
+/* ── HERO PARALLAX ───────────────────────────────────── */
+.hero {
+  --parallax: 0px;
+  background-position: center calc(50% + var(--parallax));
+}
+.hero__content {
+  will-change: transform, opacity;
+}
+
+/* ── ENHANCED REVEALS ────────────────────────────────── */
 .reveal {
   opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.9s ease, transform 0.9s ease;
+  transform: translateY(40px) scale(0.97);
+  filter: blur(3px);
+  transition:
+    opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.7s ease;
 }
-.reveal.visible { opacity: 1; transform: translateY(0); }
-.book--delay { transition-delay: 0.18s; }
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  filter: blur(0);
+}
+
+/* Slide from left */
+.reveal-left {
+  transform: translateX(-60px) translateY(20px) scale(0.95);
+}
+.reveal-left.visible {
+  transform: translateX(0) translateY(0) scale(1);
+}
+
+/* Slide from right */
+.reveal-right {
+  transform: translateX(60px) translateY(20px) scale(0.95);
+}
+.reveal-right.visible {
+  transform: translateX(0) translateY(0) scale(1);
+}
+
+/* Scale up from center */
+.reveal-scale {
+  transform: scale(0.88);
+}
+.reveal-scale.visible {
+  transform: scale(1);
+}
+
+/* Stagger delays for sequential reveals */
+[data-stagger="1"] { transition-delay: 0.08s; }
+[data-stagger="2"] { transition-delay: 0.16s; }
+[data-stagger="3"] { transition-delay: 0.24s; }
+[data-stagger="4"] { transition-delay: 0.32s; }
+
+/* Book card stagger */
+.book[data-book="2"] { transition-delay: 0.2s; }
+
+/* ── STICKY BOOKS SCROLL TRACK ───────────────────────── */
+.books__track {
+  min-height: 180vh;
+  position: relative;
+}
+.books__frame {
+  position: sticky;
+  top: 0;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 5rem 0;
+}
+
+/* ── DIVIDER DRAW-IN ─────────────────────────────────── */
+.divider path:nth-child(2) {
+  stroke-dasharray: 3000;
+  stroke-dashoffset: 3000;
+  transition: stroke-dashoffset 1.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.divider--drawn path:nth-child(2) {
+  stroke-dashoffset: 0;
+}
+
+/* ── NEWSLETTER PARALLAX ─────────────────────────────── */
+.nl__skull {
+  will-change: transform;
+  transition: transform 0.1s linear;
+}
+
+/* Newsletter glow pulse on entry */
+.newsletter.in-view::before {
+  animation: glowPulse 3s ease-in-out infinite alternate;
+}
+@keyframes glowPulse {
+  from { opacity: 0.6; }
+  to   { opacity: 1; }
+}
+
+/* ── SECTION EDGE FADES ──────────────────────────────── */
+.books::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 120px;
+  background: linear-gradient(to top, rgba(10,14,11,0.9), transparent);
+  pointer-events: none;
+  z-index: 5;
+}
 
 /* ── SCROLLBAR ───────────────────────────────────────── */
 ::-webkit-scrollbar { width: 5px; }
@@ -707,4 +806,47 @@ ul { list-style: none; }
   .btn { max-width: 300px; width: 100%; }
   .books, .newsletter { padding: 5rem 0; }
   .book__body { padding: 1.2rem 1.3rem 1.4rem; }
+
+  /* Simplify animations on mobile */
+  .books__track { min-height: auto; }
+  .books__frame { position: relative; min-height: auto; }
+  .reveal-left, .reveal-right {
+    transform: translateY(30px) scale(0.97);
+  }
+  .reveal-left.visible, .reveal-right.visible {
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ── REDUCED MOTION ──────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal-left,
+  .reveal-right,
+  .reveal-scale {
+    opacity: 0;
+    transform: none;
+    filter: none;
+    transition: opacity 0.3s ease;
+  }
+  .reveal.visible,
+  .reveal-left.visible,
+  .reveal-right.visible,
+  .reveal-scale.visible {
+    opacity: 1;
+  }
+  .hero__content {
+    will-change: auto;
+  }
+  .nl__skull {
+    will-change: auto;
+  }
+  .books__track { min-height: auto; }
+  .books__frame { position: relative; min-height: auto; }
+  .divider path:nth-child(2) {
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    transition: none;
+  }
+  @keyframes glowPulse { from, to { opacity: 1; } }
 }

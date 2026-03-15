@@ -208,14 +208,11 @@
         New releases, cover reveals, and chapter previews — 
         delivered straight to your inbox. No spam. Only darkness.
       </p>
-      <form class="nl__form reveal" id="nlForm"
-            action="https://app.kit.com/forms/YOUR_FORM_ID/subscriptions" method="POST">
-        <input type="text"  name="fields[first_name]" placeholder="Your Name"
+      <form class="nl__form reveal" id="nlForm">
+        <input type="text"  name="name" placeholder="Your Name"
                class="nl__input" autocomplete="given-name" />
-        <input type="email" name="email_address" placeholder="Email Address"
+        <input type="email" name="email" placeholder="Email Address"
                class="nl__input" required autocomplete="email" />
-        <input type="hidden" name="api_key" value="YOUR_API_KEY" />
-        <input type="hidden" name="tag" value="website-signup" />
         <button type="submit" class="btn btn--forge btn--wide">
           <span class="btn__icon-l">✦</span> Enter the Covenant
         </button>
@@ -415,7 +412,8 @@
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll(); // initial call
 
-  // ── Newsletter (Kit / ConvertKit) ────────────────────────
+  // ── Newsletter (Google Sheets) ───────────────────────────
+  const NEWSLETTER_URL = 'YOUR_GOOGLE_SCRIPT_URL';
   document.getElementById('nlForm').addEventListener('submit', async e => {
     e.preventDefault();
     const form = e.target;
@@ -423,18 +421,20 @@
     btn.disabled = true;
     btn.textContent = 'Joining\u2026';
     try {
-      const res = await fetch(form.action, {
+      const res = await fetch(NEWSLETTER_URL, {
         method: 'POST',
-        body: new FormData(form),
-        headers: { 'Accept': 'application/json' }
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({
+          name: form.name.value,
+          email: form.email.value
+        })
       });
-      if (res.ok) {
+      const data = await res.json();
+      if (data.result === 'ok') {
         form.style.display = 'none';
         document.getElementById('nlSuccess').style.display = 'block';
       } else {
-        btn.disabled = false;
-        btn.innerHTML = '<span class="btn__icon-l">\u2726</span> Enter the Covenant';
-        alert('Something went wrong. Please try again.');
+        throw new Error(data.message || 'Unknown error');
       }
     } catch(err) {
       btn.disabled = false;
